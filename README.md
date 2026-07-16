@@ -39,7 +39,7 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 - Nmap
 - Netcat
 
-## Topologia da infraestrutura de rede virtual implementada
+## Topologia da infraestrutura de redes virtual implementada
 
 ![Topologia da infraestrutura virtual implementada](imagens/topologia/Topologia_infraestrutura.png)
 
