@@ -25,6 +25,14 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 
 ---
 
+## Ambiente de testes
+
+### Hardware
+
+- Notebook Intel Core i3
+- 8 GB de memória RAM
+- Sistema operacional Windows 11
+
 ## Tecnologias, sistemas e softwares utilizados
 
 - pfSense CE
@@ -45,13 +53,7 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 
 ---
 
-## Ambiente de testes
-
-### Hardware
-
-- Notebook Intel Core i3
-- 8 GB de memória RAM
-- Sistema operacional Windows 11
+## Implementação
 
 
 ## Resultados
