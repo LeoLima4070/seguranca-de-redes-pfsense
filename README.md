@@ -41,8 +41,6 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 
 ## Topologia da rede
 
-*A imagem abaixo apresenta a topologia utilizada durante o laboratório.*
-
 (![Topologia da infraestrutura virtual implementada](imagens/topologia/Topologia_infraestrutura.png))
 
 ---
