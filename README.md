@@ -49,11 +49,12 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 
 ## Topologia da infraestrutura virtual implementada
 
-![Topologia da infraestrutura virtual implementada](imagens/topologia/Topologia_infraestrutura.png)
+![Topologia da infraestrutura virtual implementada](imagens/topologia_e_infraestrutura/Topologia_infraestrutura.png)
 
 ---
 
 ## Implementação
+
 
 
 ## Resultados
