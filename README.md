@@ -93,7 +93,7 @@ As interfaces **WAN** e **LAN** foram configuradas com endereços IP estáticos,
 - **WAN:** `192.168.0.5/24`
 - **LAN:** `192.168.1.1/24`
 
-Além disso, a interface de gerenciamento **WebConfigurator** foi configurada para aceitar conexões exclusivamente pela interface **LAN**, ficando disponível no endereço **https://192.168.1.1**. Essa configuração restringe o acesso administrativo à rede interna, reduzindo a exposição da interface de gerenciamento.
+Além disso, a interface de gerenciamento **WebConfigurator** foi configurada para aceitar conexões exclusivamente pela interface **LAN**, ficando disponível no endereço 'https://192.168.1.1'. Essa configuração restringe o acesso administrativo à rede interna, reduzindo a exposição da interface de gerenciamento.
 
 As configurações iniciais das interfaces **WAN** e **LAN** são apresentadas na figura abaixo.
 
