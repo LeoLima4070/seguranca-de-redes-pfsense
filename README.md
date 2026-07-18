@@ -48,7 +48,7 @@ Nesse contexto, este projeto apresenta a implementação, em um **ambiente de la
 - Netcat
 
 
-## Implementação
+## Implementações
 
 Para iniciar a implementação, foi realizada a criação do ambiente virtualizado no VirtualBox. A máquina virtual do **pfSense** foi configurada com duas interfaces de rede: a primeira interface, destinada à **WAN**, foi configurada em modo **Bridge** para permitir o acesso à internet através da rede existente; a segunda interface, destinada à **LAN**, foi configurada utilizando o modo **Rede Interna**, responsável pela comunicação entre os dispositivos do ambiente de laboratório.
 
@@ -66,7 +66,7 @@ A relação das máquinas virtuais criadas e suas respectivas configurações b�
 
 ---
 
-## Topologia da infraestrutura virtual implementada
+### Topologia da infraestrutura virtual implementada
 
 **Figura 02 – Topologia da infraestrutura virtual implementada.**
 
@@ -84,7 +84,7 @@ Essa segmentação permite reproduzir cenários reais de acesso remoto, administ
 
 ---
 
-## Configurações Iniciais do pfSense
+### Configurações Iniciais do pfSense
 
 Após a instalação do **pfSense**, foram realizadas as configurações iniciais da infraestrutura de rede.
 
@@ -109,7 +109,7 @@ Após a configuração das interfaces de rede, o gerenciamento do firewall passo
 
 ---
 
-## Plano de endereçamento IP
+### Plano de endereçamento IP
 
 Inicialmente, foi definido o esquema de endereçamento da rede local. Para isso, foram configuradas no servidor **DHCP** reservas de endereços IP para as máquinas **Linux-Server-Empresa** e **Linux-Cliente-Desktop**, além de alguns endereços adicionais destinados à utilização como IPs estáticos.
 
@@ -127,7 +127,7 @@ Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criaç
 
 ---
 
-## Adequação do Ambiente de Testes
+### Adequação do Ambiente de Testes
 
 Em razão da utilização de um ambiente de laboratório totalmente virtualizado e baseado exclusivamente em endereços IP privados, foi necessário ajustar algumas configurações padrão do **pfSense** para garantir o correto funcionamento da infraestrutura.
 
@@ -141,9 +141,9 @@ Essas configurações, habilitadas por padrão no pfSense, têm como objetivo im
 
 ---
 
-## Implementação das regras de firewall
+### Implementação das regras de firewall
 
-## Configuração de Aliases
+#### Configuração de Aliases
 
 Com o objetivo de aumentar a legibilidade e facilitar a manutenção das políticas de segurança, foram criados **aliases** para agrupar endereços IP, redes e portas utilizados pelas regras de firewall. Essa abordagem é considerada uma boa prática, pois permite alterações centralizadas sem a necessidade de modificar individualmente cada regra associada.
 
@@ -164,7 +164,7 @@ A configuração dos aliases no **pfSense** é apresentada na figura abaixo.
 
 ---
 
-## Política de Segurança Implementada
+#### Política de Segurança Implementada
 
 A política de segurança adotada neste projeto foi estruturada com base em dois princípios fundamentais:
 
@@ -175,7 +175,7 @@ A adoção desses princípios reduz a superfície de ataque da infraestrutura, m
 
 ---
 
-## Regras de Firewall da Interface WAN
+#### Regras de Firewall da Interface WAN
 
 A interface **WAN** representa o principal ponto de exposição da infraestrutura à Internet. Em razão disso, optou-se por restringir ao máximo os serviços acessíveis externamente.
 
@@ -191,7 +191,7 @@ A configuração das regras de firewall da interface **WAN** é apresentada na f
 
 ---
 
-## Regras de Firewall da Interface LAN
+#### Regras de Firewall da Interface LAN
 
 As regras implementadas na interface **LAN** foram projetadas para controlar o acesso dos usuários internos aos serviços locais e externos.
 
@@ -209,7 +209,7 @@ A organização das regras de firewall aplicadas à interface **LAN** é apresen
 
 ---
 
-## Regras de Firewall da Interface OpenVPN
+#### Regras de Firewall da Interface OpenVPN
 
 A interface **OpenVPN** possui um conjunto específico de regras destinado ao controle do tráfego proveniente dos usuários conectados à VPN.
 
