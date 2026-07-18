@@ -62,7 +62,7 @@ A relação das máquinas virtuais criadas e suas respectivas configurações b�
 
 **Figura 01 – Tabela das máquinas virtuais do laboratório.**
 
-![Tabela das máquinas virtuais do laboratório](imagens/topologia_e_infraestrutura/Especificações_maquinas_virtuais.png)
+![Tabela das máquinas virtuais do laboratório](docs/assets/topologia_e_infraestrutura/Especificações_maquinas_virtuais.png)
 
 ---
 
@@ -70,7 +70,7 @@ A relação das máquinas virtuais criadas e suas respectivas configurações b�
 
 **Figura 02 – Topologia da infraestrutura virtual implementada.**
 
-![Topologia da infraestrutura virtual implementada](imagens/topologia_e_infraestrutura/Topologia_infraestrutura.png)
+![Topologia da infraestrutura virtual implementada](docs/assets/topologia_e_infraestrutura/Topologia_infraestrutura.png)
 
 A infraestrutura foi organizada em três segmentos distintos: **rede interna**, **firewall/roteador** e **rede externa**, conforme apresentado na Figura acima.
 
@@ -99,13 +99,13 @@ As configurações iniciais das interfaces **WAN** e **LAN** são apresentadas n
 
 **Figura 03 – Configuração iniciais do pfSense nas interfaces WAN e LAN.**
 
-![Configuração das interfaces WAN e LAN](imagens/configs_pfSense/Configs_iniciais_pfSense.png)
+![Configuração das interfaces WAN e LAN](docs/assets/configs_pfSense/Configs_iniciais_pfSense.png)
 
 Após a configuração das interfaces de rede, o gerenciamento do firewall passou a ser realizado por meio da interface web (**WebConfigurator**), acessível através da rede LAN.
 
 **Figura 04 – Tela inicial do WebConfigurator do pfSense.**
 
-![Tela inicial do WebConfigurator](imagens/configs_pfSense/Tela_inicial_webGUI_pfSense.png)
+![Tela inicial do WebConfigurator](docs/assets/configs_pfSense/Tela_inicial_webGUI_pfSense.png)
 
 ---
 
@@ -119,11 +119,11 @@ Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criaç
 
 **Figura 05 – Reservas de endereços IP estáticos.**
 
-![Reservas DHCP](imagens/configs_pfSense/Reserva_IPs_estáticos.png)
+![Reservas DHCP](/docs/assets/configs_pfSense/Reserva_IPs_estáticos.png)
 
 **Figura 06 – Configuração do intervalo de endereços DHCP.**
 
-![Configuração do DHCP](imagens/configs_pfSense/configs_servidor_DHCP.png)
+![Configuração do DHCP](docs/assets/configs_pfSense/configs_servidor_DHCP.png)
 
 ---
 
@@ -137,7 +137,7 @@ Essas configurações, habilitadas por padrão no pfSense, têm como objetivo im
 
 **Figura 07 – Desabilitando bloqueio de endereços privados.**
 
-![Desabilitando bloqueio de endereços privados](imagens/configs_pfSense/Desabilitando_bloqueio_IPs_privados.png)
+![Desabilitando bloqueio de endereços privados](docs/assets/configs_pfSense/Desabilitando_bloqueio_IPs_privados.png)
 
 ---
 
@@ -160,7 +160,7 @@ A configuração dos aliases no **pfSense** é apresentada na figura abaixo.
 
 **Figura 08 – Aliases configurados no pfSense.**
 
-![Aliases configurados no pfSense](imagens/configs_pfSense/Aliases.png)
+![Aliases configurados no pfSense](docs/assets/configs_pfSense/Aliases.png)
 
 ---
 
@@ -187,7 +187,7 @@ A configuração das regras de firewall da interface **WAN** é apresentada na f
 
 **Figura 09 – Regras de firewall da interface WAN no pfSense.**
 
-![Regras de firewall da interface WAN](imagens/configs_pfSense/Configs_firewall_interface_WAN.png)
+![Regras de firewall da interface WAN](docs/assets/configs_pfSense/Configs_firewall_interface_WAN.png)
 
 ---
 
@@ -205,7 +205,7 @@ A organização das regras de firewall aplicadas à interface **LAN** é apresen
 
 **Figura 10 – Regras de firewall da interface LAN no pfSense.**
 
-![Regras da Interface LAN](imagens/configs_pfSense/Configs_firewall_interface_LAN.png)
+![Regras da Interface LAN](docs/assets/configs_pfSense/Configs_firewall_interface_LAN.png)
 
 ---
 
@@ -225,7 +225,7 @@ A configuração das regras de firewall da interface **OpenVPN** é apresentada 
 
 **Figura 11 – Regras de firewall da interface OpenVPN no pfSense.**
 
-![Regras da Interface OpenVPN](imagens/configs_pfSense/Configs_firewall_interface_OpenVPN.png)
+![Regras da Interface OpenVPN](docs/assets/configs_pfSense/Configs_firewall_interface_OpenVPN.png)
 
 
 ## Resultados
