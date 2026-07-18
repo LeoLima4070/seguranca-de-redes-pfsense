@@ -88,7 +88,7 @@ O intervalo de endereços estáticos da rede foi definido entre **192.168.1.1** 
 
 Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criação de regras de firewall e permite a identificação consistente dos dispositivos presentes na rede. As configurações realizadas são ilustradas nas figuras abaixo.
 
-**Figura 03 – Reservas de endereços IP.**
+**Figura 03 – Reservas de endereços IP estáticos.**
 
 ![Reservas DHCP](imagens/configs_pfSense/Reserva_IPs_estáticos.png)
 
