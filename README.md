@@ -99,13 +99,13 @@ As configurações iniciais das interfaces **WAN** e **LAN** são apresentadas n
 
 **Figura 03 – Configuração iniciais do pfSense nas interfaces WAN e LAN.**
 
-![Configuração das interfaces WAN e LAN](imagens/Configs_pfSense/Configs_iniciais_pfSense.png)
+![Configuração das interfaces WAN e LAN](imagens/configs_pfSense/Configs_iniciais_pfSense.png)
 
 Após a configuração das interfaces de rede, o gerenciamento do firewall passou a ser realizado por meio da interface web (**WebConfigurator**), acessível através da rede LAN.
 
 **Figura 04 – Tela inicial do WebConfigurator do pfSense.**
 
-![Tela inicial do WebConfigurator](imagens/Configs_pfSense/Tela_inicial_webGUI_pfSense.png)
+![Tela inicial do WebConfigurator](imagens/configs_pfSense/Tela_inicial_webGUI_pfSense.png)
 
 ---
 
