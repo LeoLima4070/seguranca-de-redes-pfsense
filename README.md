@@ -84,6 +84,31 @@ Essa segmentação permite reproduzir cenários reais de acesso remoto, administ
 
 ---
 
+## Configurações Iniciais do pfSense
+
+Após a instalação do **pfSense**, foram realizadas as configurações iniciais da infraestrutura de rede.
+
+As interfaces **WAN** e **LAN** foram configuradas com endereços IP estáticos, conforme o esquema de endereçamento definido para o ambiente de laboratório:
+
+- **WAN:** `192.168.0.5/24`
+- **LAN:** `192.168.1.1/24`
+
+Além disso, a interface de gerenciamento **WebConfigurator** foi configurada para aceitar conexões exclusivamente pela interface **LAN**, ficando disponível no endereço **https://192.168.1.1**. Essa configuração restringe o acesso administrativo à rede interna, reduzindo a exposição da interface de gerenciamento.
+
+As configurações iniciais das interfaces **WAN** e **LAN** são apresentadas na figura abaixo.
+
+**Figura 03 – Configuração iniciais do pfSense nas interfaces WAN e LAN.**
+
+![Configuração das interfaces WAN e LAN](imagens/Configs_pfSense/Configs_iniciais_pfSense.png)
+
+Após a configuração das interfaces de rede, o gerenciamento do firewall passou a ser realizado por meio da interface web (**WebConfigurator**), acessível através da rede LAN.
+
+**Figura 04 – Tela inicial do WebConfigurator do pfSense.**
+
+![Tela inicial do WebConfigurator](imagens/Configs_pfSense/Tela_inicial_webGUI_pfSense.png)
+
+---
+
 ## Plano de endereçamento IP
 
 Inicialmente, foi definido o esquema de endereçamento da rede local. Para isso, foram configuradas no servidor **DHCP** reservas de endereços IP para as máquinas **Linux-Server-Empresa** e **Linux-Cliente-Desktop**, além de alguns endereços adicionais destinados à utilização como IPs estáticos.
