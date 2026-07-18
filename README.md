@@ -117,11 +117,11 @@ O intervalo de endereços estáticos da rede foi definido entre **192.168.1.1** 
 
 Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criação de regras de firewall e permite a identificação consistente dos dispositivos presentes na rede. As configurações realizadas são ilustradas nas figuras abaixo.
 
-**Figura 03 – Reservas de endereços IP estáticos.**
+**Figura 05 – Reservas de endereços IP estáticos.**
 
 ![Reservas DHCP](imagens/configs_pfSense/Reserva_IPs_estáticos.png)
 
-**Figura 04 – Configuração do intervalo de endereços DHCP.**
+**Figura 06 – Configuração do intervalo de endereços DHCP.**
 
 ![Configuração do DHCP](imagens/configs_pfSense/configs_servidor_DHCP.png)
 
@@ -135,7 +135,7 @@ Para isso, foram desabilitadas as opções **Block private networks and loopback
 
 Essas configurações, habilitadas por padrão no pfSense, têm como objetivo impedir o tráfego proveniente de redes privadas e de endereços classificados como *bogon* em ambientes de produção. No entanto, como o ambiente de testes utiliza apenas redes privadas para simular uma infraestrutura corporativa, a desativação temporária dessas opções foi necessária para permitir a comunicação entre as máquinas virtuais.
 
-**Figura 05 – Desabilitando bloqueio de endereços privados.**
+**Figura 07 – Desabilitando bloqueio de endereços privados.**
 
 ![Desabilitando bloqueio de endereços privados](imagens/configs_pfSense/Desabilitando_bloqueio_IPs_privados.png)
 
@@ -158,7 +158,7 @@ Os seguintes aliases foram configurados:
 
 A configuração dos aliases no **pfSense** é apresentada na figura abaixo.
 
-**Figura 06 – Aliases configurados no pfSense.**
+**Figura 08 – Aliases configurados no pfSense.**
 
 ![Aliases configurados no pfSense](imagens/configs_pfSense/Aliases.png)
 
@@ -185,7 +185,7 @@ Todos os demais acessos provenientes da Internet são bloqueados automaticamente
 
 A configuração das regras de firewall da interface **WAN** é apresentada na figura abaixo.
 
-**Figura 07 – Regras de firewall da interface WAN no pfSense.**
+**Figura 09 – Regras de firewall da interface WAN no pfSense.**
 
 ![Regras de firewall da interface WAN](imagens/configs_pfSense/Configs_firewall_interface_WAN.png)
 
@@ -203,7 +203,7 @@ Também foi autorizada a utilização do protocolo **ICMP** para testes de conec
 
 A organização das regras de firewall aplicadas à interface **LAN** é apresentada na figura abaixo.
 
-**Figura 08 – Regras de firewall da interface LAN no pfSense.**
+**Figura 10 – Regras de firewall da interface LAN no pfSense.**
 
 ![Regras da Interface LAN](imagens/configs_pfSense/Configs_firewall_interface_LAN.png)
 
@@ -223,7 +223,7 @@ Por fim, foi criada uma regra permitindo o acesso remoto ao servidor de arquivos
 
 A configuração das regras de firewall da interface **OpenVPN** é apresentada na figura abaixo.
 
-**Figura 07 – Regras de firewall da interface OpenVPN no pfSense.**
+**Figura 11 – Regras de firewall da interface OpenVPN no pfSense.**
 
 ![Regras da Interface OpenVPN](imagens/configs_pfSense/Configs_firewall_interface_OpenVPN.png)
 
