@@ -64,6 +64,8 @@ A relação das máquinas virtuais criadas e suas respectivas configurações b�
 
 ![Tabela das máquinas virtuais do laboratório](imagens/topologia_e_infraestrutura/Especificações_maquinas_virtuais.png)
 
+---
+
 ## Topologia da infraestrutura virtual implementada
 
 **Figura 02 – Topologia da infraestrutura virtual implementada.**
@@ -79,6 +81,8 @@ O **firewall pfSense** atua como ponto central de interconexão entre as redes, 
 Por sua vez, a **rede externa (WAN - 192.168.0.0/24 e VPN - 10.0.8.0/24)** representa a conexão com a internet e os usuários remotos que necessitam acessar recursos internos por meio de conexões VPN seguras. Também foi utilizada uma estação externa para simular ataques originados fora da rede corporativa.
 
 Essa segmentação permite reproduzir cenários reais de acesso remoto, administração de serviços e aplicação de políticas de segurança, possibilitando a realização de testes de validação da arquitetura proposta.
+
+---
 
 ## Plano de endereçamento IP
 
@@ -96,6 +100,7 @@ Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criaç
 
 ![Configuração do DHCP](imagens/configs_pfSense/configs_servidor_DHCP.png)
 
+---
 
 ## Adequação do Ambiente de Testes
 
@@ -108,6 +113,95 @@ Essas configurações, habilitadas por padrão no pfSense, têm como objetivo im
 **Figura 05 – Desabilitando bloqueio de endereços privados.**
 
 ![Desabilitando bloqueio de endereços privados](imagens/configs_pfSense/Desabilitando_bloqueio_IPs_privados.png)
+
+---
+
+## Implementação das regras de firewall
+
+## Configuração de Aliases
+
+Com o objetivo de aumentar a legibilidade e facilitar a manutenção das políticas de segurança, foram criados **aliases** para agrupar endereços IP, redes e portas utilizados pelas regras de firewall. Essa abordagem é considerada uma boa prática, pois permite alterações centralizadas sem a necessidade de modificar individualmente cada regra associada.
+
+Os seguintes aliases foram configurados:
+
+- **admin_redes**: endereços IP das máquinas dos administradores de rede;
+- **admin_vpn**: endereços IP fixos atribuídos aos administradores conectados via VPN;
+- **HTTP_HTTPS**: portas **80** (HTTP) e **443** (HTTPS);
+- **HTTP_HTTPS_DNS**: portas **80** (HTTP), **443** (HTTPS) e **53** (DNS);
+- **Linux_server**: endereço IP do servidor Linux;
+- **porta_SMB**: porta **445**, utilizada pelo protocolo SMB para compartilhamento de arquivos.
+
+A configuração dos aliases no **pfSense** é apresentada na figura abaixo.
+
+**Figura 06 – Aliases configurados no pfSense.**
+
+![Aliases configurados no pfSense](imagens/configs_pfSense/Aliases.png)
+
+---
+
+## Política de Segurança Implementada
+
+A política de segurança adotada neste projeto foi estruturada com base em dois princípios fundamentais:
+
+- **Princípio do menor privilégio:** somente o tráfego estritamente necessário é permitido, restringindo o acesso aos serviços essenciais.
+- **Política de negação por padrão (*default deny*):** todo tráfego que não esteja explicitamente autorizado pelas regras de firewall é bloqueado automaticamente.
+
+A adoção desses princípios reduz a superfície de ataque da infraestrutura, minimiza a exposição de serviços críticos e contribui para um ambiente de rede mais seguro. Dessa forma, apenas comunicações previamente autorizadas podem atravessar o firewall, reforçando o controle de acesso e a proteção dos recursos da rede.
+
+---
+
+## Regras de Firewall da Interface WAN
+
+A interface **WAN** representa o principal ponto de exposição da infraestrutura à Internet. Em razão disso, optou-se por restringir ao máximo os serviços acessíveis externamente.
+
+A única exceção corresponde ao serviço **OpenVPN**, disponibilizado por meio da porta **UDP 1194**. Sua implementação é essencial para viabilizar o acesso remoto seguro à rede interna por meio de um túnel criptografado.
+
+Todos os demais acessos provenientes da Internet são bloqueados automaticamente pela política de **negação por padrão (*default deny*)**, reduzindo significativamente os riscos associados à exposição desnecessária de serviços administrativos e aplicações internas.
+
+A configuração das regras de firewall da interface **WAN** é apresentada na figura abaixo.
+
+**Figura 07 – Regras de firewall da interface WAN no pfSense.**
+
+![Regras de firewall da interface WAN](imagens/configs_pfSense/Configs_firewall_interface_WAN.png)
+
+---
+
+## Regras de Firewall da Interface LAN
+
+As regras implementadas na interface **LAN** foram projetadas para controlar o acesso dos usuários internos aos serviços locais e externos.
+
+O acesso administrativo ao **pfSense** foi restrito exclusivamente aos administradores previamente autorizados. Apenas os endereços IP definidos no alias **admin_redes** podem acessar a interface de gerenciamento via **HTTP (80)**, **HTTPS (443)** e **SSH (22)**.
+
+Além disso, foram liberados os principais serviços necessários para o funcionamento da rede, permitindo que os dispositivos da LAN acessem a internet por meio dos protocolos **HTTP**, **HTTPS** e **DNS**.
+
+Também foi autorizada a utilização do protocolo **ICMP** para testes de conectividade, restringindo-se aos tipos **Echo Request** e **Echo Reply**, permitindo a realização de diagnósticos sem comprometer a segurança da infraestrutura.
+
+A organização das regras de firewall aplicadas à interface **LAN** é apresentada na figura abaixo.
+
+**Figura 08 – Regras de firewall da interface LAN no pfSense.**
+
+![Regras da Interface LAN](imagens/configs_pfSense/Configs_firewall_interface_LAN.png)
+
+---
+
+## Regras de Firewall da Interface OpenVPN
+
+A interface **OpenVPN** possui um conjunto específico de regras destinado ao controle do tráfego proveniente dos usuários conectados à VPN.
+
+O acesso administrativo ao **pfSense** foi permitido exclusivamente aos administradores de rede cujos endereços IP pertencem ao alias **admin_vpn**, autorizando conexões às interfaces de gerenciamento via **HTTP (80)**, **HTTPS (443)** e **SSH (22)**.
+
+Para os usuários conectados à VPN, foram liberados os serviços essenciais de navegação (**HTTP**, **HTTPS** e **DNS**), permitindo o acesso à internet por meio do firewall.
+
+Também foram implementadas regras para permitir tráfego **ICMP**, possibilitando a realização de testes de conectividade entre a rede VPN, a rede interna e a internet.
+
+Por fim, foi criada uma regra permitindo o acesso remoto ao servidor de arquivos da rede interna utilizando o protocolo **SMB**, por meio da porta **445**, definida no alias **porta_SMB**.
+
+A configuração das regras de firewall da interface **OpenVPN** é apresentada na figura abaixo.
+
+**Figura 07 – Regras de firewall da interface OpenVPN no pfSense.**
+
+![Regras da Interface OpenVPN](imagens/configs_pfSense/Configs_firewall_interface_OpenVPN.png)
+
 
 ## Resultados
 
