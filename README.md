@@ -60,9 +60,13 @@ Por fim, foram criadas máquinas virtuais com sistemas **Windows** e **Linux** c
 
 A relação das máquinas virtuais criadas e suas respectivas configurações básicas é apresentada na tabela abaixo.
 
+**Figura 01 – Tabela das máquinas virtuais do laboratório.**
+
 ![Tabela das máquinas virtuais do laboratório](imagens/topologia_e_infraestrutura/Especificações_maquinas_virtuais.png)
 
 ## Topologia da infraestrutura virtual implementada
+
+**Figura 02 – Topologia da infraestrutura virtual implementada.**
 
 ![Topologia da infraestrutura virtual implementada](imagens/topologia_e_infraestrutura/Topologia_infraestrutura.png)
 
@@ -75,6 +79,35 @@ O **firewall pfSense** atua como ponto central de interconexão entre as redes, 
 Por sua vez, a **rede externa (WAN - 192.168.0.0/24 e VPN - 10.0.8.0/24)** representa a conexão com a internet e os usuários remotos que necessitam acessar recursos internos por meio de conexões VPN seguras. Também foi utilizada uma estação externa para simular ataques originados fora da rede corporativa.
 
 Essa segmentação permite reproduzir cenários reais de acesso remoto, administração de serviços e aplicação de políticas de segurança, possibilitando a realização de testes de validação da arquitetura proposta.
+
+## Plano de endereçamento IP
+
+Inicialmente, foi definido o esquema de endereçamento da rede local. Para isso, foram configuradas no servidor **DHCP** reservas de endereços IP para as máquinas **Linux-Server-Empresa** e **Linux-Cliente-Desktop**, além de alguns endereços adicionais destinados à utilização como IPs estáticos.
+
+O intervalo de endereços estáticos da rede foi definido entre **192.168.1.1** (gateway padrão) e **192.168.1.5/24**. O servidor **DHCP** foi configurado para distribuir endereços IP dinamicamente no intervalo de **192.168.1.6** a **192.168.1.254**, utilizando máscara de sub-rede **/24**.
+
+Essa estratégia simplifica o gerenciamento da infraestrutura, facilita a criação de regras de firewall e permite a identificação consistente dos dispositivos presentes na rede. As configurações realizadas são ilustradas nas figuras abaixo.
+
+**Figura 03 – Reservas de endereços IP.**
+
+![Reservas DHCP](imagens/configs_pfSense/Reserva_IPs_estáticos.png)
+
+**Figura 04 – Configuração do intervalo de endereços DHCP.**
+
+![Configuração do DHCP](imagens/configs_pfSense/configs_servidor_DHCP.png)
+
+
+## Adequação do Ambiente de Testes
+
+Em razão da utilização de um ambiente de laboratório totalmente virtualizado e baseado exclusivamente em endereços IP privados, foi necessário ajustar algumas configurações padrão do **pfSense** para garantir o correto funcionamento da infraestrutura.
+
+Para isso, foram desabilitadas as opções **Block private networks and loopback addresses** e **Block bogon networks** nas interfaces **WAN** e **LAN**, conforme apresentado na Figura abaixo.
+
+Essas configurações, habilitadas por padrão no pfSense, têm como objetivo impedir o tráfego proveniente de redes privadas e de endereços classificados como *bogon* em ambientes de produção. No entanto, como o ambiente de testes utiliza apenas redes privadas para simular uma infraestrutura corporativa, a desativação temporária dessas opções foi necessária para permitir a comunicação entre as máquinas virtuais.
+
+**Figura 05 – Desabilitando bloqueio de endereços privados.**
+
+![Desabilitando bloqueio de endereços privados](imagens/configs_pfSense/Desabilitando_bloqueio_IPs_privados.png)
 
 ## Resultados
 
