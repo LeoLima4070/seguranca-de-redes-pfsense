@@ -277,7 +277,7 @@ O endereço de loopback (`127.0.0.1`) foi utilizado para restringir as requisiç
 
 **Figura 13 – Porta 1812 configurada para autenticação no FreeRADIUS**
 
-![Porta 1812 configurada para autenticação no FreeRADIUS](docs/assets/configs_pfSense/servidor_freeradius_1812.png)
+![Porta 1812 configurada para autenticação no FreeRADIUS](docs/assets/configs_pfSense/Servidor_freeradius_1812.png)
 
 **Figura 14 – Usuários cadastrados FreeRADIUS**
 
@@ -290,7 +290,6 @@ O endereço de loopback (`127.0.0.1`) foi utilizado para restringir as requisiç
 **Figura 16 - Códigos temporários gerados no Google Authenticator**
 
 ![Usuários cadastrados FreeRADIUS](docs/assets/configs_pfSense/codigos_TOTP_google_auth.png)
-
 
 ##### Exportação dos clientes
 
