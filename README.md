@@ -229,11 +229,11 @@ A configuração das regras de firewall da interface **OpenVPN** é apresentada 
 
 ---
 
-#### Configuração do Servidor OpenVPN
+### Configuração do Servidor OpenVPN
 
 O servidor OpenVPN foi configurado utilizando o modo **Remote Access (SSL/TLS + User Authentication)**, permitindo o acesso remoto seguro à rede por meio de autenticação baseada em certificados digitais e autenticação multifator (MFA) integrada ao FreeRADIUS.
 
-##### Principais configurações
+#### Principais configurações
 
 - **Modo:** Remote Access (SSL/TLS + User Authentication)
 - **Protocolo:** UDP
@@ -252,7 +252,7 @@ Essas configurações estabelecem um túnel VPN seguro, garantem que todo o trá
 
 ![Servidor OpenVPN configurado](docs/assets/configs_pfSense/servidor_OpenVPN_configurado.png)
 
-##### Autenticação
+#### Autenticação
 
 A autenticação dos clientes VPN foi implementada por meio da integração entre o **OpenVPN** e o **FreeRADIUS**, que atua como servidor de autenticação centralizada. Essa integração permite validar as credenciais dos usuários e implementar autenticação multifator (MFA), aumentando significativamente a segurança do acesso remoto.
 
@@ -263,7 +263,7 @@ A solução foi composta pelos seguintes mecanismos:
 - Autenticação baseada em **TOTP (Time-based One-Time Password)** por meio do Google Authenticator;
 - PIN de 4 dígitos combinado com um código temporário de 6 dígitos gerado pelo aplicativo Google Authenticator.
 
-##### Configuração do FreeRADIUS
+#### Configuração do FreeRADIUS
 
 Após a instalação do pacote **FreeRADIUS** no pfSense, foi configurado um servidor RADIUS para atender às requisições de autenticação do OpenVPN.
 
@@ -293,7 +293,7 @@ O endereço de loopback (`127.0.0.1`) foi utilizado para restringir as requisiç
 
 ---
 
-##### Fluxo de autenticação
+#### Fluxo de autenticação
 
 Após a configuração do OpenVPN e do FreeRADIUS, o processo de autenticação passou a ocorrer de forma centralizada. O **pfSense** atua como intermediário entre o cliente OpenVPN e o servidor **FreeRADIUS**, responsável por validar as credenciais do usuário e o segundo fator de autenticação.
 
@@ -313,7 +313,7 @@ Esse processo garante que somente usuários autorizados, portando um certificado
 
 ---
 
-##### Emissão de certificados dos clientes
+#### Emissão de certificados dos clientes
 
 Após a configuração do servidor OpenVPN, foram emitidos certificados digitais individuais para os usuários **user1**, **user2** e **user3**, todos assinados pela Autoridade Certificadora (CA) da VPN. Cada certificado identifica exclusivamente seu respectivo usuário, garantindo a autenticidade durante o processo de conexão e permitindo a revogação individual de acessos quando necessário.
 
@@ -323,7 +323,7 @@ Após a configuração do servidor OpenVPN, foram emitidos certificados digitais
 
 ---
 
-##### Exportação dos clientes OpenVPN
+#### Exportação dos clientes OpenVPN
 
 Após a emissão dos certificados digitais, foi utilizado o pacote **OpenVPN Client Export** para gerar os perfis de configuração dos clientes. Os arquivos exportados no formato `.ovpn` reúnem todas as informações necessárias para estabelecer a conexão VPN, incluindo o certificado do cliente, a chave privada, o certificado da Autoridade Certificadora (CA) e os parâmetros de configuração do servidor.
 
@@ -336,7 +336,7 @@ Esses arquivos podem ser importados diretamente em clientes compatíveis com o O
 
 ---
 
-##### Revogação de certificados
+#### Revogação de certificados
 
 Como mecanismo adicional de controle de acesso, foi realizado o procedimento de **revogação de certificados**, permitindo invalidar imediatamente o acesso de usuários à VPN em situações como comprometimento de credenciais, perda de dispositivos ou desligamento da organização.
 
@@ -346,7 +346,7 @@ Para validar esse recurso, o certificado do usuário **user3** foi revogado no p
 
 ![Revogação de certificados](docs/assets/configs_pfSense/revogação_certificados.png)
 
-##### Client Specific Overrides
+#### Client Specific Overrides
 
 Por fim, foram configurados **Client Specific Overrides** para os usuários administradores, permitindo associar endereços IP estáticos aos respectivos certificados digitais.
 
@@ -355,6 +355,8 @@ Essa funcionalidade garante que cada usuário receba sempre o mesmo endereço IP
 **Figura 20 – Client Specific Overrides configurado**
 
 ![Client Specific Overrides](docs/assets/configs_pfSense/client_specific_overrides.png)
+
+### Testes e validação 
 
 
 
