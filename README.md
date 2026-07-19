@@ -259,6 +259,4 @@ A implementação demonstrou que é possível construir uma infraestrutura de se
 
 **Leandro Lima**
 
-Tecnólogo em Redes de Computadores
-
-Instituto Federal do Rio Grande do Norte (IFRN)
+🎓 Tecnólogo em Redes de Computadores | Instituto Federal do Rio Grande do Norte (IFRN)
