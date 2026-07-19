@@ -231,23 +231,78 @@ A configuração das regras de firewall da interface **OpenVPN** é apresentada 
 
 #### Configuração do Servidor OpenVPN
 
-A implementação do serviço OpenVPN foi realizada por meio do assistente **OpenVPN Wizard** disponibilizado pelo pfSense, que automatiza parte do processo de configuração, incluindo a criação da Autoridade Certificadora (CA) e do certificado do servidor. Essa etapa permitiu estabelecer a infraestrutura de chaves públicas (PKI) necessária para garantir a autenticação e a segurança das conexões VPN.
+O servidor OpenVPN foi configurado utilizando o modo **Remote Access (SSL/TLS + User Authentication)**, permitindo o acesso remoto seguro à rede por meio de autenticação baseada em certificados digitais e autenticação multifator (MFA) integrada ao FreeRADIUS.
 
-O servidor foi configurado no modo **Remote Access (SSL/TLS + User Authentication)**, caracterizando uma VPN do tipo **client-to-site**, destinada ao acesso remoto seguro de usuários à rede corporativa. Nesse modelo, a autenticação combina certificados digitais individuais com autenticação multifator (MFA), utilizando PIN e códigos temporários gerados pelo Google Authenticator. O OpenVPN foi integrado ao FreeRADIUS, responsável pela validação das credenciais e dos fatores adicionais de autenticação.
+##### Principais configurações
 
-A comunicação foi configurada utilizando o protocolo **UDP** sobre a porta **1194**, padrão do OpenVPN, operando exclusivamente com **IPv4**. O modo de operação selecionado foi **tun (Layer 3 Tunnel Mode)**, permitindo o roteamento de tráfego IP entre os clientes remotos e a rede interna.
+- **Modo:** Remote Access (SSL/TLS + User Authentication)
+- **Protocolo:** UDP
+- **Porta:** 1194
+- **Modo do túnel:** TUN (Layer 3)
+- **Rede VPN:** 10.0.8.0/24
+- **IPv6:** Desabilitado
+- **Redirect IPv4 Gateway:** Habilitado
+- **Inter-client Communication:** Desabilitado
+- **Duplicate Connections:** Desabilitado
+- **Strict User-CN Matching:** Habilitado
 
-No que se refere à segurança criptográfica, foram definidos a autoridade certificadora **Cert_VPN_home-office** e o certificado do servidor **Cert_Server_VPN**. A CA é responsável pela emissão e validação dos certificados dos clientes, enquanto o certificado do servidor garante sua autenticidade perante os usuários. Adicionalmente, foi habilitada a opção **Strict User-CN Matching**, exigindo correspondência entre o nome de usuário informado durante a autenticação e o campo **Common Name (CN)** presente no certificado digital, impedindo o uso indevido de certificados pertencentes a outros usuários.
-
-Para o túnel VPN foi definida a rede **10.0.8.0/24**, destinada aos clientes remotos. A opção **Redirect IPv4 Gateway** foi habilitada para direcionar todo o tráfego IPv4 dos clientes através do túnel VPN, assegurando a aplicação integral das políticas de segurança implementadas no firewall. Como o ambiente de testes foi desenvolvido exclusivamente em IPv4, o suporte ao IPv6 permaneceu desabilitado.
-
-Visando aumentar a segurança da solução, foi desativada a comunicação direta entre clientes VPN (**Inter-client Communication**), reduzindo os riscos de movimentação lateral em caso de comprometimento de um dispositivo. Da mesma forma, a opção **Duplicate Connection** foi desabilitada, limitando cada certificado a uma única conexão simultânea, o que contribui para a rastreabilidade dos acessos e evita o compartilhamento indevido de credenciais.
-
-A Figura abaixo apresenta a configuração do servidor OpenVPN utilizado na implementação.
+Essas configurações estabelecem um túnel VPN seguro, garantem que todo o tráfego IPv4 dos clientes passe pelo firewall e impedem a comunicação direta entre clientes conectados, reduzindo a superfície de ataque.
 
 **Figura 12 – Servidor OpenVPN configurado** 
 
 ![Servidor OpenVPN configurado](docs/assets/configs_pfSense/servidor_OpenVPN_configurado.png)
+
+##### Autenticação
+
+A autenticação dos clientes VPN foi implementada por meio da integração entre o **OpenVPN** e o **FreeRADIUS**, que atua como servidor de autenticação centralizada. Essa integração permite validar as credenciais dos usuários e implementar autenticação multifator (MFA), aumentando significativamente a segurança do acesso remoto.
+
+A solução foi composta pelos seguintes mecanismos:
+
+- Certificados digitais individuais emitidos para cada usuário;
+- Autenticação centralizada pelo **FreeRADIUS** utilizando o protocolo **RADIUS**;
+- Autenticação baseada em **TOTP (Time-based One-Time Password)** por meio do Google Authenticator;
+- PIN de 4 dígitos combinado com um código temporário de 6 dígitos gerado pelo aplicativo Google Authenticator.
+
+##### Configuração do FreeRADIUS
+
+Após a instalação do pacote **FreeRADIUS** no pfSense, foi configurado um servidor RADIUS para atender às requisições de autenticação do OpenVPN.
+
+As principais configurações utilizadas foram:
+
+- **Interface IP Address:** `127.0.0.1`
+- **Authentication Port:** `1812`
+- **Authentication Method:** PAP
+
+O endereço de loopback (`127.0.0.1`) foi utilizado para restringir as requisições RADIUS ao próprio pfSense, aumentando a segurança da solução. Em seguida, foram cadastrados os usuários que utilizariam a VPN, sendo gerados automaticamente uma chave secreta e um QR Code para configuração do Google Authenticator.
+
+**Figura 13 – Porta 1812 configurada para autenticação no FreeRADIUS**
+
+![Porta 1812 configurada para autenticação no FreeRADIUS](docs/assets/configs_pfSense/servidor_freeradius_1812.png)
+
+**Figura 14 – Usuários cadastrados FreeRADIUS**
+
+![Usuários cadastrados FreeRADIUS](docs/assets/configs_pfSense/usuarios_cadastrados_freeradius.png)
+
+**Figura 15 - QR Code para configuração do TOTP no Google Authenticator**
+
+![Usuários cadastrados FreeRADIUS](docs/assets/configs_pfSense/qrcode.png)
+
+**Figura 16 - Códigos temporários gerados no Google Authenticator**
+
+![Usuários cadastrados FreeRADIUS](docs/assets/configs_pfSense/codigos_TOTP_google_auth.png)
+
+
+##### Exportação dos clientes
+
+Os arquivos `.ovpn` foram gerados utilizando o pacote **OpenVPN Client Export**, contendo certificados e parâmetros necessários para conexão.
+
+##### Revogação de certificados
+
+Foi validado o processo de revogação de certificados, impedindo imediatamente novas conexões de usuários revogados.
+
+##### Client Specific Overrides
+
+Foram configurados IPs estáticos para usuários administrativos, facilitando a criação de regras de firewall e auditoria.
 
 ## Resultados
 
