@@ -227,6 +227,27 @@ A configuração das regras de firewall da interface **OpenVPN** é apresentada 
 
 ![Regras da Interface OpenVPN](docs/assets/configs_pfSense/Configs_firewall_interface_OpenVPN.png)
 
+---
+
+#### Configuração do Servidor OpenVPN
+
+A implementação do serviço OpenVPN foi realizada por meio do assistente **OpenVPN Wizard** disponibilizado pelo pfSense, que automatiza parte do processo de configuração, incluindo a criação da Autoridade Certificadora (CA) e do certificado do servidor. Essa etapa permitiu estabelecer a infraestrutura de chaves públicas (PKI) necessária para garantir a autenticação e a segurança das conexões VPN.
+
+O servidor foi configurado no modo **Remote Access (SSL/TLS + User Authentication)**, caracterizando uma VPN do tipo **client-to-site**, destinada ao acesso remoto seguro de usuários à rede corporativa. Nesse modelo, a autenticação combina certificados digitais individuais com autenticação multifator (MFA), utilizando PIN e códigos temporários gerados pelo Google Authenticator. O OpenVPN foi integrado ao FreeRADIUS, responsável pela validação das credenciais e dos fatores adicionais de autenticação.
+
+A comunicação foi configurada utilizando o protocolo **UDP** sobre a porta **1194**, padrão do OpenVPN, operando exclusivamente com **IPv4**. O modo de operação selecionado foi **tun (Layer 3 Tunnel Mode)**, permitindo o roteamento de tráfego IP entre os clientes remotos e a rede interna.
+
+No que se refere à segurança criptográfica, foram definidos a autoridade certificadora **Cert_VPN_home-office** e o certificado do servidor **Cert_Server_VPN**. A CA é responsável pela emissão e validação dos certificados dos clientes, enquanto o certificado do servidor garante sua autenticidade perante os usuários. Adicionalmente, foi habilitada a opção **Strict User-CN Matching**, exigindo correspondência entre o nome de usuário informado durante a autenticação e o campo **Common Name (CN)** presente no certificado digital, impedindo o uso indevido de certificados pertencentes a outros usuários.
+
+Para o túnel VPN foi definida a rede **10.0.8.0/24**, destinada aos clientes remotos. A opção **Redirect IPv4 Gateway** foi habilitada para direcionar todo o tráfego IPv4 dos clientes através do túnel VPN, assegurando a aplicação integral das políticas de segurança implementadas no firewall. Como o ambiente de testes foi desenvolvido exclusivamente em IPv4, o suporte ao IPv6 permaneceu desabilitado.
+
+Visando aumentar a segurança da solução, foi desativada a comunicação direta entre clientes VPN (**Inter-client Communication**), reduzindo os riscos de movimentação lateral em caso de comprometimento de um dispositivo. Da mesma forma, a opção **Duplicate Connection** foi desabilitada, limitando cada certificado a uma única conexão simultânea, o que contribui para a rastreabilidade dos acessos e evita o compartilhamento indevido de credenciais.
+
+A Figura abaixo apresenta a configuração do servidor OpenVPN utilizado na implementação.
+
+**Figura 12 – Servidor OpenVPN configurado** 
+
+![Servidor OpenVPN configurado](docs/assets/configs_pfSense/servidor_OpenVPN_configurado.png)
 
 ## Resultados
 
