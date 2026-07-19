@@ -291,17 +291,72 @@ O endereço de loopback (`127.0.0.1`) foi utilizado para restringir as requisiç
 
 ![Usuários cadastrados FreeRADIUS](docs/assets/configs_pfSense/codigos_TOTP_google_auth.png)
 
-##### Exportação dos clientes
+---
 
-Os arquivos `.ovpn` foram gerados utilizando o pacote **OpenVPN Client Export**, contendo certificados e parâmetros necessários para conexão.
+##### Fluxo de autenticação
+
+Após a configuração do OpenVPN e do FreeRADIUS, o processo de autenticação passou a ocorrer de forma centralizada. O **pfSense** atua como intermediário entre o cliente OpenVPN e o servidor **FreeRADIUS**, responsável por validar as credenciais do usuário e o segundo fator de autenticação.
+
+O processo ocorre conforme o fluxo abaixo:
+
+1. O usuário inicia a conexão utilizando o cliente OpenVPN.
+2. O cliente apresenta seu certificado digital ao servidor OpenVPN.
+3. O OpenVPN valida o certificado e verifica sua autenticidade por meio da Autoridade Certificadora (CA), além de confirmar a correspondência entre o certificado e o usuário autenticado (**Strict User-CN Matching**).
+4. O usuário informa seu nome de usuário e, no campo **Password**, a combinação do **PIN de 4 dígitos** com o **código TOTP de 6 dígitos** gerado pelo Google Authenticator.
+5. O pfSense encaminha essas credenciais ao FreeRADIUS utilizando o protocolo **RADIUS**.
+6. O FreeRADIUS valida o nome de usuário, o PIN e o código temporário (TOTP).
+7. Em caso de sucesso, o FreeRADIUS retorna uma resposta **Access-Accept** ao OpenVPN.
+8. O OpenVPN estabelece o túnel VPN, atribui ao cliente um endereço IP da rede **10.0.8.0/24** e aplica as regras de firewall configuradas.
+9. Caso qualquer etapa da autenticação falhe, o FreeRADIUS retorna **Access-Reject**, e a conexão é imediatamente encerrada.
+
+Esse processo garante que somente usuários autorizados, portando um certificado digital válido e um código temporário gerado pelo Google Authenticator, consigam estabelecer uma conexão segura com a VPN.
+
+---
+
+##### Emissão de certificados dos clientes
+
+Após a configuração do servidor OpenVPN, foram emitidos certificados digitais individuais para os usuários **user1**, **user2** e **user3**, todos assinados pela Autoridade Certificadora (CA) da VPN. Cada certificado identifica exclusivamente seu respectivo usuário, garantindo a autenticidade durante o processo de conexão e permitindo a revogação individual de acessos quando necessário.
+
+**Figura 17 - Certificados dos clientes OpenVPN**
+
+![Certificados dos clientes OpenVPN](docs/assets/configs_pfSense/certificados_criados.png)
+
+---
+
+##### Exportação dos clientes OpenVPN
+
+Após a emissão dos certificados digitais, foi utilizado o pacote **OpenVPN Client Export** para gerar os perfis de configuração dos clientes. Os arquivos exportados no formato `.ovpn` reúnem todas as informações necessárias para estabelecer a conexão VPN, incluindo o certificado do cliente, a chave privada, o certificado da Autoridade Certificadora (CA) e os parâmetros de configuração do servidor.
+
+Esses arquivos podem ser importados diretamente em clientes compatíveis com o OpenVPN, simplificando o processo de configuração e reduzindo a possibilidade de erros durante a implantação.
+
+
+**Figura 18 - Certificados dos clientes OpenVPN disponíveis para uso**
+
+![Certificados dos clientes OpenVPN](docs/assets/configs_pfSense/certificados_ovpn.png)
+
+---
 
 ##### Revogação de certificados
 
-Foi validado o processo de revogação de certificados, impedindo imediatamente novas conexões de usuários revogados.
+Como mecanismo adicional de controle de acesso, foi realizado o procedimento de **revogação de certificados**, permitindo invalidar imediatamente o acesso de usuários à VPN em situações como comprometimento de credenciais, perda de dispositivos ou desligamento da organização.
+
+Para validar esse recurso, o certificado do usuário **user3** foi revogado no pfSense. Após a revogação, novas tentativas de conexão utilizando esse certificado passaram a ser rejeitadas pelo servidor OpenVPN, impedindo o estabelecimento da VPN mesmo que o usuário possuísse o arquivo de configuração `.ovpn`.
+
+**Figura 19 – Revogação de certificados no pfSense**
+
+![Revogação de certificados](docs/assets/configs_pfSense/revogação_certificados.png)
 
 ##### Client Specific Overrides
 
-Foram configurados IPs estáticos para usuários administrativos, facilitando a criação de regras de firewall e auditoria.
+Por fim, foram configurados **Client Specific Overrides** para os usuários administradores, permitindo associar endereços IP estáticos aos respectivos certificados digitais.
+
+Essa funcionalidade garante que cada usuário receba sempre o mesmo endereço IP ao estabelecer a conexão VPN, facilitando a implementação de regras de firewall, auditoria, monitoramento e controle de acesso baseados na identidade do usuário.
+
+**Figura 20 – Client Specific Overrides configurado**
+
+![Client Specific Overrides](docs/assets/configs_pfSense/client_specific_overrides.png)
+
+
 
 ## Resultados
 
