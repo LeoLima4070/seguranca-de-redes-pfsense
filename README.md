@@ -356,8 +356,310 @@ Essa funcionalidade garante que cada usuário receba sempre o mesmo endereço IP
 
 ![Client Specific Overrides](docs/assets/configs_pfSense/client_specific_overrides.png)
 
-## Testes e validação 
+## Validação da Solução Proposta
 
+A validação da solução proposta foi realizada por meio de testes funcionais e de segurança destinados a verificar a efetividade das políticas implementadas no firewall, o funcionamento do serviço VPN e a autenticação multifator.
+
+Os experimentos buscaram avaliar o comportamento da infraestrutura diante de diferentes cenários de acesso autorizado e não autorizado, permitindo verificar sua aderência aos requisitos de segurança definidos para pequenas empresas.
+
+---
+
+### Testes de Firewall
+
+Os testes de firewall tiveram como objetivo validar o correto funcionamento das regras de filtragem configuradas no pfSense, analisando seu comportamento diante de diferentes cenários de tráfego permitido e bloqueado, bem como o controle de acesso administrativo e a aplicação da política de bloqueio por padrão (**default deny**).
+
+---
+
+#### Teste de Firewall - Interface WAN
+
+A interface WAN controla o tráfego de entrada proveniente da Internet, sendo o principal ponto de exposição do firewall.
+
+Nesse contexto, foram realizados testes com o objetivo de validar esse controle, verificando se apenas os serviços autorizados estavam acessíveis externamente, enquanto as demais tentativas de acesso eram devidamente bloqueadas.
+
+---
+
+#### Teste 1 - Bloqueio de acesso externo a serviços não autorizados (**default deny**)
+
+Foi realizado um teste de conexão a partir de um host externo, utilizando o sistema Kali Linux (IP `192.168.0.8`), em direção à interface WAN do pfSense (IP `192.168.0.5`).
+
+O objetivo do experimento foi verificar o funcionamento da política de bloqueio padrão (**default deny**) diante de uma tentativa de acesso a uma porta TCP que não possuía regra de liberação configurada.
+
+Para a realização do teste, foi utilizada a ferramenta **Netcat (nc)**, que tentou estabelecer uma conexão TCP na porta `4444` da interface WAN do firewall.
+
+Como não existia nenhuma regra permitindo explicitamente o tráfego para essa porta, esperava-se que a conexão fosse bloqueada pelo pfSense.
+
+Os resultados confirmaram o comportamento esperado. A tentativa de conexão não foi concluída e retornou a mensagem: **connection timed out** indicando que o acesso foi impedido.
+
+
+**Figura 21 – Tráfego bloqueado pela política default deny na interface WAN**
+
+![Bloqueio](docs/assets/testes/teste_regras_wan_nc.png)
+
+---
+
+#### Teste 2 - Acesso permitido ao serviço OpenVPN na interface WAN
+
+Foi realizado um teste de conexão externa a partir de um host Kali Linux (IP `192.168.0.8`) em direção à interface WAN do pfSense (IP `192.168.0.5`), com foco na porta `1194/UDP`.
+
+O objetivo do experimento foi verificar se a porta utilizada pelo serviço OpenVPN, previamente liberada por meio de uma regra específica no firewall, estava acessível a partir da rede externa.
+
+Para a realização do teste, foi utilizada a ferramenta **Nmap**, configurada para analisar exclusivamente essa porta e confirmar seu estado de acessibilidade.
+
+O resultado obtido demonstrou que a porta `1194/UDP` encontra-se acessível externamente, conforme previsto pela configuração do firewall.
+
+**Figura 22 –  Escaneamento da porta 1194/UDP na interface WAN com Nmap**
+
+![Permissão](docs/assets/testes/teste_regras_wan_nmap.png)
+
+O comportamento observado confirma o correto funcionamento da regra de liberação criada na interface WAN para o serviço OpenVPN, permitindo o tráfego legítimo destinado à aplicação.
+
+---
+
+#### Testes de Firewall - Interface LAN
+
+A interface LAN controla o tráfego de saída originado na rede interna, onde normalmente se pressupõe um ambiente confiável.
+
+Contudo, sob a perspectiva de segurança, também foi considerado o cenário em que um possível atacante obtém acesso à rede local.
+
+Nesse contexto, foram realizados testes com o objetivo de validar tanto o controle do tráfego destinado à Internet quanto o acesso a recursos internos, especialmente ao próprio firewall pfSense, verificando a eficácia das regras de restrição implementadas.
+
+---
+
+#### Teste 1 - Bloqueio de tráfego de saída não autorizado
+
+Foi realizado um teste de conexão a partir de um host interno da rede local, denominado **Linux Cliente** (IP `192.168.1.3`), em direção a um host externo, **Kali Linux** (IP `192.168.0.8`).
+
+O objetivo do experimento foi avaliar o comportamento do firewall da interface LAN diante de uma tentativa de conexão de saída para uma porta TCP que não possuía regra de permissão explicitamente configurada.
+
+Para a realização do teste, o host Kali Linux foi configurado para permanecer em escuta na porta `4444/TCP` utilizando a ferramenta **Netcat**.
+
+Em seguida, o host interno tentou estabelecer uma conexão com esse serviço, também por meio do Netcat, permitindo verificar se o tráfego seria autorizado ou bloqueado pelo firewall.
+
+Os resultados demonstraram que a conexão não foi estabelecida.
+
+**Figura 23 –  Bloqueio de tráfego de saída não autorizado porta 4444**
+
+![Bloqueio](docs/assets/testes/testes_regras_LAN_nc.png)
+
+A análise dos registros do pfSense confirmou que o tráfego foi bloqueado pela política de negação padrão aplicada à interface LAN.
+
+Esse comportamento evidencia a efetividade da política **default deny**, garantindo que conexões para serviços ou portas não explicitamente autorizados sejam bloqueadas.
+
+---
+
+#### Teste 2 - Controle de acesso administrativo ao pfSense na LAN
+
+Foi realizado um conjunto de testes para avaliar o controle de acesso administrativo ao pfSense por meio da interface LAN.
+
+O objetivo foi verificar se apenas os hosts previamente autorizados conseguem acessar a interface web de gerenciamento e o serviço SSH do firewall, conforme definido pelas regras de segurança configuradas.
+
+Para a execução dos testes, foram utilizados:
+
+- **Host administrativo:** IP `192.168.1.3`
+- **Host interno não autorizado:** IP `192.168.1.6`
+
+O host administrativo realizou o acesso à interface web do pfSense por meio de um navegador utilizando o protocolo HTTPS (`porta 443/TCP`) e também ao serviço SSH (`porta 22/TCP`).
+
+Paralelamente, o host não autorizado tentou acessar os mesmos serviços utilizando a ferramenta **Netcat**, com o objetivo de verificar se as restrições configuradas seriam corretamente aplicadas.
+
+Os resultados demonstraram que tanto a interface web de gerenciamento quanto o serviço SSH estavam acessíveis exclusivamente ao host administrativo.
+
+**Figura 24 – Acesso permitido a interface web e via SSH do pfSense pelo host administrativo**
+
+![Permissão](docs/assets/testes/teste_regra_LAN_permissão.png)
+
+Em contrapartida, as tentativas de acesso realizadas a partir do host não autorizado foram bloqueadas.
+
+**Figura 25 – Bloqueio de acesso à web e SSH do pfSense a partir do host não administrativo**
+
+![Bloqueio](docs/assets/testes/testes_regras_LAN_bloqueio.png)
+
+A análise dos registros do pfSense confirmou que as conexões foram tratadas de acordo com as regras de controle de acesso configuradas na interface LAN, comprovando a eficácia dos mecanismos de restrição implementados para proteger os serviços administrativos do firewall.
+
+---
+
+#### Teste 3 - Acesso à Internet para a rede interna
+
+Foi realizado um teste de acesso à Internet a partir de um host pertencente à rede interna, identificado pelo endereço IP `192.168.1.3`.
+
+O objetivo do experimento foi avaliar o comportamento das regras de firewall configuradas na interface LAN do pfSense em relação à permissão de tráfego de saída destinado à Internet.
+
+Para a execução do teste, foi utilizado um navegador web instalado no host interno, por meio do qual foi realizado o acesso ao endereço externo: **google.com**
+
+A atividade teve como finalidade verificar se o tráfego originado na rede local seria encaminhado corretamente pelo firewall, de acordo com as regras estabelecidas para a interface LAN.
+
+Os resultados demonstraram que a navegação foi realizada com sucesso.
+
+**Figura 26 – Navegação na internet permitida para a rede interna**
+
+![Permissão](docs/assets/testes/testes_regra_LAN_permite_navegação.png)
+
+O acesso ao endereço externo ocorreu sem restrições, confirmando que as regras de firewall configuradas permitem a comunicação dos hosts da rede interna com a Internet.
+
+Além disso, a análise dos registros do pfSense confirmou a liberação do tráfego de saída em conformidade com as políticas definidas para a interface LAN, validando o correto funcionamento da configuração implementada.
+
+---
+
+#### Teste de Firewall - Interface OpenVPN
+
+A interface OpenVPN permite o acesso remoto à rede interna por meio de um túnel VPN.
+
+As regras implementadas diferenciam usuários administrativos de usuários comuns, garantindo acesso apenas aos recursos necessários, sempre seguindo a política de bloqueio por padrão (**default deny**).
+
+Diferentemente das interfaces WAN e LAN, não foram realizados testes com Nmap nem utilizado o Kali Linux, pois o acesso à VPN exige autenticação reforçada por múltiplos fatores.
+
+Os testes foram direcionados para verificar se:
+
+- usuários autorizados conseguem acessar os serviços permitidos;
+- usuários sem privilégios possuem seus acessos bloqueados;
+- as regras de firewall da interface OpenVPN funcionam corretamente.
+
+---
+
+## Teste 1 - Acesso administrativo ao pfSense via VPN (user1)
+
+Foi realizado um teste utilizando um cliente VPN conectado a uma rede doméstica, com o endereço IP `192.168.0.10`, localizado na mesma rede da interface WAN do pfSense.
+
+A conexão com a rede interna foi estabelecida por meio do serviço OpenVPN configurado no firewall, utilizando um perfil administrativo associado ao usuário **user1**.
+
+O objetivo do experimento foi verificar se usuários com privilégios administrativos, conectados remotamente via VPN, conseguem acessar a interface web de gerenciamento e o serviço SSH do pfSense conforme as regras de acesso definidas.
+
+Inicialmente, foi estabelecida uma conexão VPN utilizando as credenciais do usuário **user1**.
+
+Após a autenticação e criação do túnel seguro, foram realizados testes de acesso:
+
+- Interface web do pfSense utilizando HTTPS (`porta 443/TCP`);
+- Serviço SSH (`porta 22/TCP`).
+
+Esses procedimentos permitiram validar o funcionamento das regras de firewall aplicadas à interface OpenVPN para usuários administrativos.
+
+Os resultados demonstraram que o usuário **user1** conectou-se com sucesso ao servidor OpenVPN, recebendo o endereço IP: **10.0.8.100/24** no túnel VPN, pertencente ao alias: admin_VPN utilizado nas regras de controle de acesso da interface OpenVPN.
+
+**Figura 27 – Acesso permitido ao pfSense via HTTPS e SSH na VPN para usuário administrador(user1)**
+
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_permissão.png)
+
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_permissão.png)
+
+O usuário conseguiu acessar corretamente a interface web de gerenciamento do pfSense por meio do endereço interno: `https://192.168.1.1` utilizando HTTPS (`porta 443/TCP`), bem como estabelecer conexão com o serviço SSH (`porta 22/TCP`).
+
+A análise dos registros do pfSense confirmou que o tráfego originado da interface OpenVPN foi permitido de acordo com as regras de firewall configuradas, comprovando o correto funcionamento do mecanismo de acesso administrativo remoto por VPN.
+
+---
+
+## Teste 2 - Bloqueio de acesso administrativo ao pfSense via VPN (user3)
+
+Foi realizado um teste para verificar o controle de acesso administrativo ao pfSense por meio da interface OpenVPN, utilizando um usuário VPN que não possui privilégios administrativos.
+
+Nesse cenário, o usuário **user3** estabeleceu conexão com o servidor OpenVPN, porém não pertence ao alias: admin_VPN
+
+utilizado pelas regras de firewall para identificar os usuários autorizados a acessar os serviços administrativos do firewall.
+
+O objetivo do experimento foi validar se usuários VPN sem privilégios administrativos possuem o acesso à interface web de gerenciamento e ao serviço SSH corretamente bloqueado.
+
+Após o estabelecimento da conexão VPN com o usuário **user3**, foram realizadas tentativas de acesso aos serviços administrativos do pfSense utilizando:
+
+- Interface web HTTPS (`porta 443/TCP`);
+- Serviço SSH (`porta 22/TCP`).
+
+Para isso, foi utilizada a ferramenta **Netcat (nc)**.
+
+Os resultados demonstraram que o usuário **user3** conectou-se com sucesso ao servidor OpenVPN, recebendo o endereço: 10.0.8.2/24 Entretanto, as tentativas de acesso à interface web e ao serviço SSH não foram concluídas, retornando: connection timed out
+
+Esse comportamento evidencia que, embora o usuário possua acesso à VPN, ele não dispõe das permissões necessárias para acessar os serviços administrativos do firewall.
+
+A análise dos logs do pfSense confirmou que o tráfego foi bloqueado pelas regras da interface OpenVPN, uma vez que o endereço IP atribuído ao usuário não pertence ao alias `admin_VPN`.
+
+**Figura 28 – Teste de acesso à interface Web e SSH do pfSense via VPN com Netcat para usuário não administrador (user3)**
+
+![Bloqueio](docs/assets/testes/teste_regra_OpenVPN_bloqueio_https.png)
+
+![Bloqueio](docs/assets/testes/teste_regra_OpenVPN_bloqueio_ssh.png)
+
+---
+
+#### Teste 3 - Acesso à Internet por usuários conectados via VPN
+
+Foi realizado um teste para avaliar o acesso à Internet por usuários conectados remotamente à rede por meio da interface OpenVPN do pfSense.
+
+A configuração da VPN possuía a opção **Redirect Gateway** habilitada, fazendo com que todo o tráfego de saída dos clientes VPN fosse encaminhado pelo túnel VPN antes de alcançar a Internet.
+
+O objetivo do experimento foi verificar se os usuários conectados via VPN possuíam acesso à Internet de acordo com as regras de firewall configuradas, bem como confirmar que o tráfego era corretamente roteado pelo túnel VPN estabelecido com o pfSense.
+
+Após a conexão dos clientes à VPN, foram realizados testes de navegação utilizando navegadores web instalados no dispositivo do usuário.
+
+O cliente acessou diferentes endereços externos na Internet, permitindo validar o funcionamento do roteamento e das regras de firewall aplicadas à interface OpenVPN.
+
+**Figura 29 – Usuário acessando a internet via VPN**
+
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_conexão_internet.png)
+
+A análise dos registros do firewall confirmou que o tráfego originado da interface OpenVPN foi permitido de acordo com as regras configuradas, comprovando o correto funcionamento da política de acesso à Internet para clientes VPN e validando a operação da opção **Redirect Gateway** no cenário avaliado.
+
+---
+
+#### Teste 4 - Validação da política de bloqueio padrão na interface OpenVPN
+
+Foi realizado um teste para avaliar a aplicação da política de bloqueio por padrão (**default deny**) na interface OpenVPN do pfSense.
+
+O cenário considerou:
+
+- Cliente VPN (**user3**) conectado à rede interna por meio do túnel OpenVPN;
+- Servidor Linux interno com endereço IP `192.168.1.2`.
+
+O objetivo do experimento foi verificar se o firewall impediria a passagem de tráfego destinado a serviços que não possuem regras de permissão explicitamente configuradas na interface OpenVPN.
+
+Para a realização do teste, o servidor Linux interno foi configurado para permanecer em escuta na porta: 4444/TCP utilizando uma aplicação de serviço.
+
+Essa porta foi escolhida por não possuir nenhuma regra de liberação associada à interface OpenVPN do pfSense.
+
+Após o estabelecimento da conexão VPN, o usuário **user3** tentou acessar o serviço utilizando a ferramenta **Netcat (nc)**, com o objetivo de verificar se a comunicação seria permitida ou bloqueada pelo firewall.
+
+Os resultados demonstraram que a conexão não foi estabelecida.
+
+**Figura 30 – tráfego bloqueado pela regra default deny na interface OpenVPN**
+
+![Bloqueio](docs/assets/testes/teste_regra_OpenVPN_regra_deafult_deny.png)
+
+A tentativa de acesso resultou em falha de comunicação, indicando que o tráfego não foi autorizado a atravessar a interface OpenVPN.
+
+A análise dos registros do pfSense confirmou que os pacotes foram bloqueados pela regra de negação padrão aplicada à interface OpenVPN.
+
+Dessa forma, o teste comprovou o correto funcionamento da política **default deny**, garantindo que apenas serviços e portas explicitamente autorizados possam ser acessados por usuários conectados via VPN.
+
+---
+
+#### Teste 5 - Controle de acesso SSH na interface OpenVPN
+
+Foi realizado um teste para validar o controle de acesso ao servidor Linux interno (`192.168.1.2`) por meio do serviço SSH, a partir de usuários conectados via OpenVPN.
+
+O cenário contemplou:
+
+- Usuário administrativo (**user1**);
+- Usuário comum (**user3**).
+
+O acesso foi controlado por regras de firewall configuradas na interface OpenVPN do pfSense.
+
+Após o estabelecimento da conexão VPN, ambos os usuários realizaram tentativas de acesso ao serviço SSH do servidor Linux utilizando um cliente SSH e a ferramenta **Netcat (nc)**.
+
+O objetivo foi verificar se apenas usuários autorizados poderiam acessar o serviço administrativo.
+
+Os resultados demonstraram que:
+
+- O usuário administrativo (**user1**) conseguiu estabelecer a conexão SSH com sucesso;
+- O usuário comum (**user3**) teve o acesso bloqueado.
+
+**Figura 31 – Acesso permitido user1 administrador ao servidor linux via ssh**
+
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_acesso_ssh_linux_server.png)
+
+**Figura 32 – Acesso bloqueado user3 comum ao servidor linux via ssh**
+
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_acesso_ssh_linux_server_bloqueado.png)
+
+A análise dos registros do pfSense confirmou que o tráfego proveniente da interface OpenVPN foi tratado de acordo com as regras de firewall configuradas, comprovando a correta aplicação das políticas de controle de acesso.
+
+---
 
 ## Resultados
 
