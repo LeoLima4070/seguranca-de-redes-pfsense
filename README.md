@@ -378,7 +378,7 @@ Nesse contexto, foram realizados testes com o objetivo de validar esse controle,
 
 ---
 
-#### Teste 1 - Bloqueio de acesso externo a serviços não autorizados (**default deny**)
+##### Teste 1 - Bloqueio de acesso externo a serviços não autorizados (**default deny**)
 
 Foi realizado um teste de conexão a partir de um host externo, utilizando o sistema Kali Linux (IP `192.168.0.8`), em direção à interface WAN do pfSense (IP `192.168.0.5`).
 
@@ -397,7 +397,7 @@ Os resultados confirmaram o comportamento esperado. A tentativa de conexão não
 
 ---
 
-#### Teste 2 - Acesso permitido ao serviço OpenVPN na interface WAN
+##### Teste 2 - Acesso permitido ao serviço OpenVPN na interface WAN
 
 Foi realizado um teste de conexão externa a partir de um host Kali Linux (IP `192.168.0.8`) em direção à interface WAN do pfSense (IP `192.168.0.5`), com foco na porta `1194/UDP`.
 
@@ -425,7 +425,7 @@ Nesse contexto, foram realizados testes com o objetivo de validar tanto o contro
 
 ---
 
-#### Teste 1 - Bloqueio de tráfego de saída não autorizado
+##### Teste 1 - Bloqueio de tráfego de saída não autorizado
 
 Foi realizado um teste de conexão a partir de um host interno da rede local, denominado **Linux Cliente** (IP `192.168.1.3`), em direção a um host externo, **Kali Linux** (IP `192.168.0.8`).
 
@@ -447,7 +447,7 @@ Esse comportamento evidencia a efetividade da política **default deny**, garant
 
 ---
 
-#### Teste 2 - Controle de acesso administrativo ao pfSense na LAN
+##### Teste 2 - Controle de acesso administrativo ao pfSense na LAN
 
 Foi realizado um conjunto de testes para avaliar o controle de acesso administrativo ao pfSense por meio da interface LAN.
 
@@ -478,7 +478,7 @@ A análise dos registros do pfSense confirmou que as conexões foram tratadas de
 
 ---
 
-#### Teste 3 - Acesso à Internet para a rede interna
+##### Teste 3 - Acesso à Internet para a rede interna
 
 Foi realizado um teste de acesso à Internet a partir de um host pertencente à rede interna, identificado pelo endereço IP `192.168.1.3`.
 
@@ -516,7 +516,7 @@ Os testes foram direcionados para verificar se:
 
 ---
 
-## Teste 1 - Acesso administrativo ao pfSense via VPN (user1)
+##### Teste 1 - Acesso administrativo ao pfSense via VPN (user1)
 
 Foi realizado um teste utilizando um cliente VPN conectado a uma rede doméstica, com o endereço IP `192.168.0.10`, localizado na mesma rede da interface WAN do pfSense.
 
@@ -547,7 +547,7 @@ A análise dos registros do pfSense confirmou que o tráfego originado da interf
 
 ---
 
-## Teste 2 - Bloqueio de acesso administrativo ao pfSense via VPN (user3)
+##### Teste 2 - Bloqueio de acesso administrativo ao pfSense via VPN (user3)
 
 Foi realizado um teste para verificar o controle de acesso administrativo ao pfSense por meio da interface OpenVPN, utilizando um usuário VPN que não possui privilégios administrativos.
 
@@ -578,7 +578,7 @@ A análise dos logs do pfSense confirmou que o tráfego foi bloqueado pelas regr
 
 ---
 
-#### Teste 3 - Acesso à Internet por usuários conectados via VPN
+##### Teste 3 - Acesso à Internet por usuários conectados via VPN
 
 Foi realizado um teste para avaliar o acesso à Internet por usuários conectados remotamente à rede por meio da interface OpenVPN do pfSense.
 
@@ -598,7 +598,7 @@ A análise dos registros do firewall confirmou que o tráfego originado da inter
 
 ---
 
-#### Teste 4 - Validação da política de bloqueio padrão na interface OpenVPN
+##### Teste 4 - Validação da política de bloqueio padrão na interface OpenVPN
 
 Foi realizado um teste para avaliar a aplicação da política de bloqueio por padrão (**default deny**) na interface OpenVPN do pfSense.
 
@@ -629,7 +629,7 @@ Dessa forma, o teste comprovou o correto funcionamento da política **default de
 
 ---
 
-#### Teste 5 - Controle de acesso SSH na interface OpenVPN
+##### Teste 5 - Controle de acesso SSH na interface OpenVPN
 
 Foi realizado um teste para validar o controle de acesso ao servidor Linux interno (`192.168.1.2`) por meio do serviço SSH, a partir de usuários conectados via OpenVPN.
 
