@@ -592,7 +592,7 @@ O cliente acessou diferentes endereços externos na Internet, permitindo validar
 
 **Figura 29 – Usuário acessando a internet via VPN**
 
-![Permissão](docs/assets/testes/teste_regra_OpenVPN_conexão_internet.png)
+![Permissão](docs/assets/testes/teste_regra_openvpn_conexão_internet.png)
 
 A análise dos registros do firewall confirmou que o tráfego originado da interface OpenVPN foi permitido de acordo com as regras configuradas, comprovando o correto funcionamento da política de acesso à Internet para clientes VPN e validando a operação da opção **Redirect Gateway** no cenário avaliado.
 
