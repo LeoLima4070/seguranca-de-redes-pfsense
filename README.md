@@ -661,9 +661,102 @@ A análise dos registros do pfSense confirmou que o tráfego proveniente da inte
 
 ---
 
-## Resultados
+### Testes OpenVPN com Autenticação Multifator
 
-A implementação demonstrou que é possível construir uma infraestrutura de segurança para pequenas empresas utilizando soluções de código aberto, reduzindo custos de implantação sem comprometer os requisitos básicos de proteção da rede.
+Após a validação das regras de firewall nas interfaces WAN, LAN e OpenVPN, foram realizados testes para verificar o funcionamento da solução de acesso remoto seguro baseada em OpenVPN. Os testes avaliaram a autenticação multifator, o estabelecimento do túnel VPN, o acesso à rede interna e à Internet, bem como a proteção do tráfego de dados.
+
+#### Cliente Windows
+
+A Figura abaixo apresenta a conexão VPN estabelecida a partir de uma máquina Windows localizada em uma rede externa, utilizando o cliente OpenVPN Connect. A autenticação foi realizada com o usuário **user2**, por meio de certificado digital e autenticação multifator composta por PIN pessoal e código TOTP gerado pelo Google Authenticator.
+
+Conforme evidenciado na imagem, o login foi efetuado com sucesso e o túnel VPN foi estabelecido corretamente. Observa-se ainda o endereço IP real do cliente Windows (`192.168.0.11`) e o endereço IP atribuído à interface VPN (`10.0.8.200`), confirmando a criação adequada do túnel seguro.
+
+**Figura 33 – Túnel VPN estabelecido em cliente Windows (user2)**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_mfa_windows.png)
+
+A Figura a seguir complementa a análise ao apresentar os registros do pfSense, que confirmam a autenticação multifator e o estabelecimento do túnel OpenVPN para o usuário **user2** em ambiente Windows. Os logs indicam autenticação bem-sucedida via Google Authenticator, seguida da conexão correta e ativa do túnel VPN.
+
+**Figura 34 – Logs do pfSense com autenticação multifator e túnel VPN ativo no Windows (user2)**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_logs_mfa_windows.png)
+
+#### Cliente Linux
+
+O cenário foi executado em ambiente Linux, utilizando clientes OpenVPN conectados a partir de redes externas. O objetivo principal foi validar a autenticação multifator e o correto estabelecimento do túnel seguro entre os clientes remotos e o servidor OpenVPN configurado no pfSense.
+
+Para a autenticação, foram utilizados usuários cadastrados no FreeRADIUS, combinando certificado digital, PIN pessoal e código temporário (TOTP) gerado pelo Google Authenticator.
+
+Os testes iniciaram-se no cliente Linux, onde a Figura a seguir demonstra o estabelecimento bem-sucedido do túnel VPN via OpenVPN em linha de comando. A autenticação do usuário **user1** ocorreu corretamente por meio de certificado digital válido, PIN pessoal e código TOTP ativo gerado pelo Google Authenticator.
+
+Observa-se ainda o IP da máquina cliente (`192.168.0.10`) e o IP atribuído ao túnel VPN (`10.0.8.100`), confirmando a criação adequada da interface virtual e o funcionamento do serviço VPN.
+
+**Figura 35 – Conexão VPN estabelecida com sucesso em cliente Linux (user1)**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_mfa_linux.png)
+
+A Figura a seguir complementa a validação ao apresentar os registros do OpenVPN, FreeRADIUS e Google Authenticator, evidenciando a autenticação bem-sucedida do usuário e a validação do código temporário, com o consequente estabelecimento do túnel seguro.
+
+**Figura 36 – Logs do pfSense com autenticação multifator e túnel OpenVPN bem-sucedido (user1)**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_mfa_logs_linux.png)
+
+A figura a seguir apresenta uma tentativa de autenticação malsucedida na qual foi utilizado o arquivo de configuração `.ovpn` pertencente ao usuário **user2** em conjunto com as credenciais do usuário **user1**. A mensagem `AUTH_FAILED`, exibida no cliente OpenVPN em ambiente Linux, indica a falha de autenticação. Os registros do OpenVPN no pfSense demonstram que a verificação entre o nome do usuário autenticado e o *Common Name* do certificado digital resultou em valores distintos, ocasionando a rejeição da conexão.
+
+**Figura 37 – Falha de autenticação VPN devido à incompatibilidade entre usuário e certificado digital** 
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_falha_mfa_CN.png)
+
+Já a figura a seguir ilustra uma tentativa de autenticação do usuário **user1** utilizando o certificado digital correto e o PIN pessoal de 4 dígitos. Entretanto, foi informado um código temporário (TOTP) expirado, gerado pelo Google Authenticator, resultando na falha de autenticação. A imagem evidencia a mensagem `AUTH_FAILED` no cliente VPN e, nos registros do pfSense, a indicação `wrong tokencode`, confirmando que o acesso foi negado devido à expiração do código.
+
+**Figura 38 – Falha de autenticação na VPN por código TOTP inválido** 
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_mfa_falha_TOTP_inválido.png)
+
+Dessa forma, os testes comprovam que a autenticação na VPN somente é realizada quando o usuário utiliza seu arquivo `.ovpn` correspondente, contendo o certificado digital válido, em conjunto com o PIN pessoal e um código TOTP válido. A ausência ou invalidez de qualquer um desses fatores impede o estabelecimento da conexão, demonstrando a eficácia da autenticação multifator na proteção do acesso remoto e reduzindo significativamente a possibilidade de acessos não autorizados.
+
+Após o estabelecimento da conexão VPN em um cliente Linux utilizando o usuário **user1**, foram realizados testes de conectividade para validar o acesso aos recursos disponibilizados na rede interna.
+
+A Figura a seguir apresenta uma validação do acesso ao servidor de arquivos Samba (SMB) hospedado no servidor Linux interno. Utilizando o cliente Linux conectado à VPN, o acesso foi efetuado por meio do explorador de arquivos, utilizando o endereço do servidor:
+
+```text
+smb://192.168.1.2
+```
+
+**Figura 39 – Acesso ao servidor de arquivos Samba via VPN no Linux.**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_servidor_arquivos.png)
+
+Conforme evidenciado na Figura acima, o acesso ao servidor de arquivos foi realizado com sucesso. As pastas compartilhadas **"Redes"** e **"Teste1"** foram corretamente exibidas e acessadas pelo usuário remoto, demonstrando que os serviços de compartilhamento de arquivos permanecem disponíveis aos usuários autorizados conectados via VPN.
+
+Os resultados confirmam o correto funcionamento do roteamento, das regras de firewall e dos mecanismos de acesso configurados, garantindo a comunicação segura entre clientes remotos e os recursos da rede interna.
+
+
+Dando continuidade à validação dos serviços disponibilizados na rede interna, foi realizado um teste de acesso ao servidor web Apache a partir de um cliente Linux conectado à VPN com o usuário **user1**. O objetivo foi verificar a disponibilidade de um serviço web interno para usuários remotos autenticados.
+
+O teste consistiu no acesso, por meio de um navegador web, ao endereço `192.168.1.2` na porta **80/TCP (HTTP)**, onde estava hospedada a página **"Teste de Acesso via VPN – TCC"**, utilizada para simular um portal corporativo interno.
+
+O acesso foi realizado com sucesso, demonstrando que o cliente remoto conseguiu alcançar o servidor web por meio do túnel VPN.
+
+Conforme evidenciado na Figura a seguir, a página foi carregada corretamente e os registros do pfSense confirmaram a comunicação entre o cliente VPN, identificado pelo endereço `10.0.8.100`, e o servidor interno `192.168.1.2` na porta **80/TCP**.
+
+Os logs indicam que o tráfego foi permitido pelas regras de firewall vigentes, validando o funcionamento da comunicação entre a rede remota e os serviços internos.
+
+Cabe destacar que não foi necessária a criação de uma regra específica para o serviço Apache. O acesso HTTP já estava contemplado pela política de firewall que permite a navegação web aos usuários conectados via VPN. Dessa forma, o tráfego foi tratado pela regra existente, o que se mostrou suficiente para a finalidade do teste, cujo objetivo era comprovar a acessibilidade e o correto funcionamento de um serviço web interno a partir de clientes remotos autenticados.
+
+**Figura 40 – Página de teste de acesso ao servidor Apache via VPN no Linux**
+
+![teste_VPN](docs/assets/testes/teste_OpenVPN_servidor_apache.png)
+
+## Conclusões
+
+Este trabalho apresentou a implementação de uma infraestrutura básica de segurança de redes para pequenas empresas utilizando tecnologias de código aberto, com destaque para o firewall pfSense, OpenVPN e autenticação multifator por meio do FreeRADIUS e Google Authenticator.
+
+Os resultados demonstraram que a solução foi capaz de aplicar políticas de controle de acesso, bloquear conexões não autorizadas e fornecer acesso remoto seguro aos usuários. Os testes realizados validaram o funcionamento do firewall, da VPN e dos mecanismos de autenticação multifator, atendendo aos requisitos de segurança propostos.
+
+Além dos benefícios técnicos, a análise de viabilidade econômica indicou que a solução apresenta baixo custo de implementação quando comparada a alternativas proprietárias, tornando-se uma opção acessível para pequenas empresas.
+
+Como trabalhos futuros, recomenda-se a integração de soluções IDS/IPS, como Suricata ou Snort, a realização de estudos comparativos entre OpenVPN e WireGuard e a validação da arquitetura em ambientes corporativos reais, visando avaliar sua escalabilidade, desempenho e efetividade em cenários mais complexos.
 
 ---
 
