@@ -551,9 +551,7 @@ A análise dos registros do pfSense confirmou que o tráfego originado da interf
 
 Foi realizado um teste para verificar o controle de acesso administrativo ao pfSense por meio da interface OpenVPN, utilizando um usuário VPN que não possui privilégios administrativos.
 
-Nesse cenário, o usuário **user3** estabeleceu conexão com o servidor OpenVPN, porém não pertence ao alias: admin_VPN
-
-utilizado pelas regras de firewall para identificar os usuários autorizados a acessar os serviços administrativos do firewall.
+Nesse cenário, o usuário **user3** estabeleceu conexão com o servidor OpenVPN, porém não pertence ao alias: admin_VPN utilizado pelas regras de firewall para identificar os usuários autorizados a acessar os serviços administrativos do firewall.
 
 O objetivo do experimento foi validar se usuários VPN sem privilégios administrativos possuem o acesso à interface web de gerenciamento e ao serviço SSH corretamente bloqueado.
 
@@ -753,8 +751,6 @@ Cabe destacar que não foi necessária a criação de uma regra específica para
 Este trabalho apresentou a implementação de uma infraestrutura básica de segurança de redes para pequenas empresas utilizando tecnologias de código aberto, com destaque para o firewall pfSense, OpenVPN e autenticação multifator por meio do FreeRADIUS e Google Authenticator.
 
 Os resultados demonstraram que a solução foi capaz de aplicar políticas de controle de acesso, bloquear conexões não autorizadas e fornecer acesso remoto seguro aos usuários. Os testes realizados validaram o funcionamento do firewall, da VPN e dos mecanismos de autenticação multifator, atendendo aos requisitos de segurança propostos.
-
-Além dos benefícios técnicos, a análise de viabilidade econômica indicou que a solução apresenta baixo custo de implementação quando comparada a alternativas proprietárias, tornando-se uma opção acessível para pequenas empresas.
 
 Como trabalhos futuros, recomenda-se a integração de soluções IDS/IPS, como Suricata ou Snort, a realização de estudos comparativos entre OpenVPN e WireGuard e a validação da arquitetura em ambientes corporativos reais, visando avaliar sua escalabilidade, desempenho e efetividade em cenários mais complexos.
 
