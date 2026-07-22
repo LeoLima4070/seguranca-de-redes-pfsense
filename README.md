@@ -539,7 +539,7 @@ Os resultados demonstraram que o usuário **user1** conectou-se com sucesso ao s
 
 ![Permissão](docs/assets/testes/teste_regra_OpenVPN_permissão.png)
 
-![Permissão](docs/assets/testes/teste_regra_OpenVPN_permissão.png)
+![Permissão](docs/assets/testes/teste_regra_OpenVPN_permissão_ssh.png)
 
 O usuário conseguiu acessar corretamente a interface web de gerenciamento do pfSense por meio do endereço interno: `https://192.168.1.1` utilizando HTTPS (`porta 443/TCP`), bem como estabelecer conexão com o serviço SSH (`porta 22/TCP`).
 
