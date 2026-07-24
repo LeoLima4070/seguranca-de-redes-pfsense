@@ -760,4 +760,4 @@ Como trabalhos futuros, recomenda-se a integração de soluções IDS/IPS, como 
 
 **Leandro Lima**
 
-🎓 Tecnólogo em Redes de Computadores | Instituto Federal do Rio Grande do Norte (IFRN)
+🎓 Graduando em Redes de Computadores | Instituto Federal do Rio Grande do Norte (IFRN)
